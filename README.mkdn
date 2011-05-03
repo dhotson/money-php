@@ -1,0 +1,49 @@
+Money (for PHP)
+====
+
+A library for dealing with money and currency conversion.
+PHP port of http://money.rubyforge.org
+
+Usage
+----
+
+    <?php
+
+    require_once 'src/money.php';
+
+    // 10.00 USD
+    $money = new money\Money(1000, 'USD');
+    $money->cents();     // => 1000
+    $money->currency();  // => new money\Currency("USD")
+
+
+Status
+----
+
+This project is still a work in progress.
+
+Things to do:
+
+*  money comparison
+*  money arithmetic
+*  currency conversion
+
+Contributions welcome. :-)
+
+
+Tests
+----
+
+Tests are located in the tests subdirectory.
+
+You can run the tests like so:
+    ./runtests.php
+
+Credits
+----
+
+All credit goes to the creators of the Ruby money library. This is a direct port of the code.
+
+http://money.rubyforge.org/
+
+https://github.com/RubyMoney/money
