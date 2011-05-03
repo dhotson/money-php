@@ -36,8 +36,11 @@ Tests
 
 Tests are located in the tests subdirectory.
 
-You can run the tests like so:
-    ./runtests.php
+You'll need to install PHPUnit before running the tests: http://www.phpunit.de/manual/3.5/en/installation.html
+
+Then run the tests like this:
+
+    phpunit tests
 
 Credits
 ----

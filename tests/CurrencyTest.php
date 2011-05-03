@@ -1,10 +1,10 @@
 <?php
 
-require_once(BASEDIR.'/src/money.php');
+require_once(__DIR__.'/../src/money.php');
 
 use money\Currency;
 
-class CurrencyTest extends UnitTestCase
+class CurrencyTest extends PHPUnit_Framework_TestCase
 {
 	public function testBasic()
 	{
