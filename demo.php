@@ -2,7 +2,7 @@
 
 require_once 'src/money.php';
 
-use money\Money;
+use Money\Money;
 
 $m = Money::usd(100);
 

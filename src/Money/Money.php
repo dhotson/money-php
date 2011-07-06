@@ -1,6 +1,6 @@
 <?php
 
-namespace money;
+namespace Money;
 
 class Money
 {
