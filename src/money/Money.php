@@ -17,14 +17,10 @@ class Money
 			: Money::$defaultCurrency;
 	}
 
-	public static function usd($cents)
+	public static function __callStatic($name, $arguments)
 	{
-		return new self($cents, 'usd');
-	}
-
-	public static function aud($cents)
-	{
-		return new self($cents, 'aud');
+		if (isset($arguments[0]))
+			return new self($arguments[0], $name);
 	}
 
 	public function cents()
@@ -69,6 +65,13 @@ class Money
 		return isset($this->_currency->symbol)
 			? $this->_currency->symbol
 			: "¤";
+	}
+
+	public function disambiguator()
+	{
+		return isset($this->_currency->disambiguator)
+			? $this->_currency->disambiguator
+			: '';
 	}
 
 	public function decimalMark()
@@ -127,11 +130,16 @@ class Money
 		else
 			$symbolPosition = 'after';
 
+		if (isset($rules['disambiguate']))
+			$disambiguator = $this->disambiguator();
+		else
+			$disambiguator = '';
+
 		if (isset($symbolValue) && !empty($symbolValue))
 		{
 			$formatted = $symbolPosition === 'before'
-				? "$symbolValue$formatted"
-				: "$formatted $symbolValue";
+				? "$disambiguator$symbolValue$formatted"
+				: "$formatted $symbolValue$disambiguator";
 		}
 
 		if (isset($rules['decimal_mark']) && $rules['decimal_mark'] && $rules['decimal_mark'] !== $this->decimalMark())

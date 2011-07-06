@@ -6,4 +6,4 @@ use money\Money;
 
 $m = Money::usd(100);
 
-var_dump($m);
+print_r($m->format(array('disambiguate' => true)));
