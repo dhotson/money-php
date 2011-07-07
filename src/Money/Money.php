@@ -17,6 +17,14 @@ class Money
 			: Money::$defaultCurrency;
 	}
 
+	public function fromUnit($amount, $currency=null)
+	{
+		$currency = isset($currency)
+			? Currency::wrap($currency)
+			: Money::$defaultCurrency;
+		return new self($currency->subunitToUnit * $amount, $currency);
+	}
+
 	public static function __callStatic($name, $arguments)
 	{
 		if (isset($arguments[0]))
@@ -108,7 +116,7 @@ class Money
 			else
 				$symbolValue = "";
 		}
-		elseif (isset($rules['html']))
+		elseif (isset($rules['html']) && $rules['html'])
 			$symbolValue = $this->_currency->htmlEntity;
 		else
 			$symbolValue = $this->symbol();
@@ -123,6 +131,11 @@ class Money
 			$formatted = (string)floor($this->__toString());
 		}
 
+		if (isset($rules['html']) && $rules['html'])
+		{
+			$formatted = '<span class="amount">'.$formatted.'</span>';
+		}
+
 		if (isset($rules['symbol_position']))
 			$symbolPosition = $rules['symbol_position'];
 		elseif ($this->_currency->symbolFirst)
@@ -130,16 +143,23 @@ class Money
 		else
 			$symbolPosition = 'after';
 
-		if (isset($rules['disambiguate']))
-			$disambiguator = $this->disambiguator();
-		else
-			$disambiguator = '';
+		if ($symbolValue && isset($rules['disambiguate']) && $rules['disambiguate'])
+		{
+			$symbolValue = $symbolPosition === 'before'
+				? $this->disambiguator().$symbolValue
+				: $symbolValue.$this->disambiguator();
+		}
+
+		if (isset($rules['html']) && $rules['html'])
+		{
+			$symbolValue = '<span class="symbol">'.$symbolValue.'</span>';
+		}
 
 		if (isset($symbolValue) && !empty($symbolValue))
 		{
 			$formatted = $symbolPosition === 'before'
-				? "$disambiguator$symbolValue$formatted"
-				: "$formatted $symbolValue$disambiguator";
+				? "$symbolValue$formatted"
+				: "$formatted$symbolValue";
 		}
 
 		if (isset($rules['decimal_mark']) && $rules['decimal_mark'] && $rules['decimal_mark'] !== $this->decimalMark())
@@ -160,9 +180,11 @@ class Money
 
 		if (isset($rules['with_currency']) && $rules['with_currency'])
 		{
-			$formatted .= ' ';
+
 			if (isset($rules['html']) && $rules['html'])
 				$formatted .= '<span class="currency">';
+			else
+				$formatted .= ' ';
 			$formatted .= $this->_currency->__toString();
 			if (isset($rules['html']) && $rules['html'])
 				$formatted .= '</span>';

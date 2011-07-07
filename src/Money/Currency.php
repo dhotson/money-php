@@ -25,6 +25,11 @@ class Currency
 			$this->$k = $v;
 	}
 
+	/**
+	 *
+	 * @param type $currency
+	 * @return Currency
+	 */
 	public static function wrap($currency)
 	{
 		if (is_object($currency))
