@@ -2,7 +2,7 @@
 
 require_once(__DIR__.'/../src/money.php');
 
-use money\Currency;
+use Money\Currency;
 
 class CurrencyTest extends PHPUnit_Framework_TestCase
 {
