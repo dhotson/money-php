@@ -107,19 +107,18 @@ class Money
 				return "free";
 		}
 
-		if (isset($rules['symbol']))
-		{
-			if ($rules['symbol'] === true)
-				$symbolValue = $this->symbol();
-			elseif ($rules['symbol'])
-				$symbolValue = $rules['symbol'];
-			else
-				$symbolValue = "";
-		}
-		elseif (isset($rules['html']) && $rules['html'])
+		if (isset($rules['html']) && $rules['html'])
 			$symbolValue = $this->_currency->htmlEntity;
 		else
 			$symbolValue = $this->symbol();
+
+		if (isset($rules['symbol']) && $rules['symbol'] !== true)
+		{
+			if (!$rules['symbol'])
+				$symbolValue = '';
+			else
+				$symbolValue = $rules['symbol'];
+		}
 
 		if (isset($rules['no_cents']) && $rules['no_cents'] === true)
 			$formatted = (string)floor($this->__toString());
