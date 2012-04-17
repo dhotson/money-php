@@ -42,6 +42,8 @@ class MoneyTest extends PHPUnit_Framework_TestCase
 
 		$this->assertEquals('$1,234.56', $m1->format(array('no_cents_if_whole'=>true)));
 		$this->assertEquals('$1,234', $m2->format(array('no_cents_if_whole'=>true)));
+		$this->assertEquals('$1,234.56', $m1->format(array('no_cents_if_whole'=>false)));
+		$this->assertEquals('$1,234.00', $m2->format(array('no_cents_if_whole'=>false)));
 
 		$this->assertEquals('1,234.56$', $m1->format(array('symbol_position' => 'after')));
 	}
