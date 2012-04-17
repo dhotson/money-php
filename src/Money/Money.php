@@ -125,7 +125,7 @@ class Money
 		else
 			$formatted = $this->__toString();
 
-		if (isset($rules['no_cents_if_whole']) && $this->_cents % $this->_currency->subunitToUnit == 0)
+		if (isset($rules['no_cents_if_whole']) && $rules['no_cents_if_whole'] === true && $this->_cents % $this->_currency->subunitToUnit == 0)
 		{
 			$formatted = (string)floor($this->__toString());
 		}
