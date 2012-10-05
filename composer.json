@@ -1,0 +1,16 @@
+{
+    "name": "99designs/money-php",
+    "type": "library",
+    "description": "A library for dealing with money and currency conversion.",
+    "authors": [
+        {
+            "name": "dhotson"
+        },
+        {
+            "name": "lwc"
+        }
+    ],
+    "autoload": {
+        "psr-0": { "Money": "src/" }
+    }
+}
