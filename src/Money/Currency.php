@@ -19,7 +19,7 @@ class Currency
 	{
 		$this->id = strtolower($id);
 		if (!isset(self::$_table[$this->id]))
-			throw new Exception('unknown currency');
+			throw new \Exception('unknown currency');
 
 		foreach (self::$_table[$this->id] as $k => $v)
 			$this->$k = $v;

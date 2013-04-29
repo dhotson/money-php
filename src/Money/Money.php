@@ -54,7 +54,7 @@ class Money
 	public function split($num)
 	{
 		if ($num === 0)
-			throw new Exception("need at least one party");
+			throw new \Exception("need at least one party");
 
 		$low = new self($this->_cents / $num);
 		$high = new self($low->_cents + 1);
