@@ -1,6 +1,6 @@
 <?php
 
-namespace money;
+namespace Money;
 
 class Money
 {
@@ -17,14 +17,18 @@ class Money
 			: Money::$defaultCurrency;
 	}
 
-	public static function usd($cents)
+	public function fromUnit($amount, $currency=null)
 	{
-		return new self($cents, 'usd');
+		$currency = isset($currency)
+			? Currency::wrap($currency)
+			: Money::$defaultCurrency;
+		return new self($currency->subunitToUnit * $amount, $currency);
 	}
 
-	public static function aud($cents)
+	public static function __callStatic($name, $arguments)
 	{
-		return new self($cents, 'aud');
+		if (isset($arguments[0]))
+			return new self($arguments[0], $name);
 	}
 
 	public function cents()
@@ -50,7 +54,7 @@ class Money
 	public function split($num)
 	{
 		if ($num === 0)
-			throw new Exception("need at least one party");
+			throw new \Exception("need at least one party");
 
 		$low = new self($this->_cents / $num);
 		$high = new self($low->_cents + 1);
@@ -69,6 +73,13 @@ class Money
 		return isset($this->_currency->symbol)
 			? $this->_currency->symbol
 			: "¤";
+	}
+
+	public function disambiguator()
+	{
+		return isset($this->_currency->disambiguator)
+			? $this->_currency->disambiguator
+			: '';
 	}
 
 	public function decimalMark()
@@ -96,28 +107,32 @@ class Money
 				return "free";
 		}
 
-		if (isset($rules['symbol']))
-		{
-			if ($rules['symbol'] === true)
-				$symbolValue = $this->symbol();
-			elseif ($rules['symbol'])
-				$symbolValue = $rules['symbol'];
-			else
-				$symbolValue = "";
-		}
-		elseif (isset($rules['html']))
+		if (isset($rules['html']) && $rules['html'])
 			$symbolValue = $this->_currency->htmlEntity;
 		else
 			$symbolValue = $this->symbol();
+
+		if (isset($rules['symbol']) && $rules['symbol'] !== true)
+		{
+			if (!$rules['symbol'])
+				$symbolValue = '';
+			else
+				$symbolValue = $rules['symbol'];
+		}
 
 		if (isset($rules['no_cents']) && $rules['no_cents'] === true)
 			$formatted = (string)floor($this->__toString());
 		else
 			$formatted = $this->__toString();
 
-		if (isset($rules['no_cents_if_whole']) && $this->_cents % $this->_currency->subunitToUnit == 0)
+		if (isset($rules['no_cents_if_whole']) && $rules['no_cents_if_whole'] === true && $this->_cents % $this->_currency->subunitToUnit == 0)
 		{
 			$formatted = (string)floor($this->__toString());
+		}
+
+		if (isset($rules['html']) && $rules['html'])
+		{
+			$formatted = '<span class="amount">'.$formatted.'</span>';
 		}
 
 		if (isset($rules['symbol_position']))
@@ -127,11 +142,23 @@ class Money
 		else
 			$symbolPosition = 'after';
 
+		if ($symbolValue && isset($rules['disambiguate']) && $rules['disambiguate'])
+		{
+			$symbolValue = $symbolPosition === 'before'
+				? $this->disambiguator().$symbolValue
+				: $symbolValue.$this->disambiguator();
+		}
+
+		if (isset($rules['html']) && $rules['html'])
+		{
+			$symbolValue = '<span class="symbol">'.$symbolValue.'</span>';
+		}
+
 		if (isset($symbolValue) && !empty($symbolValue))
 		{
 			$formatted = $symbolPosition === 'before'
 				? "$symbolValue$formatted"
-				: "$formatted $symbolValue";
+				: "$formatted$symbolValue";
 		}
 
 		if (isset($rules['decimal_mark']) && $rules['decimal_mark'] && $rules['decimal_mark'] !== $this->decimalMark())
@@ -152,9 +179,11 @@ class Money
 
 		if (isset($rules['with_currency']) && $rules['with_currency'])
 		{
-			$formatted .= ' ';
+
 			if (isset($rules['html']) && $rules['html'])
 				$formatted .= '<span class="currency">';
+			else
+				$formatted .= ' ';
 			$formatted .= $this->_currency->__toString();
 			if (isset($rules['html']) && $rules['html'])
 				$formatted .= '</span>';
